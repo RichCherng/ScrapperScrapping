@@ -107,7 +107,8 @@ def getDefinition(_dict, _soup):
 		listOfDef = []
 		for defContent in section.findAll("div", {"class": "def-content"}):
 			strContent = defContent.get_text().replace('\n','').replace('\r', '').lstrip().rstrip()
-			listOfDef.append(re.sub(' +', ' ', strContent))
+			strContent = re.sub(' +', ' ', strContent)
+			listOfDef.append(strContent[0].capitalize() + strContent[1:])
 
 		_dict['def'][strCategory[:-2]] = listOfDef
 
