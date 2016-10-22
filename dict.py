@@ -22,24 +22,44 @@ def main():
 	if content == None: # Word doesn't exist or cannot request
 		dictWordContent  = {}
 	else:
-		soup = BeautifulSoup(content, 'html.parser')
+		soupDictionary = BeautifulSoup(content, 'html.parser')
 
 		#### Thesaurus ###
-		thesaurus = soup.findAll("div", { "class" : "deep-link-synonyms" })
-		if len(thesaurus) > 0:
-			getThesaurus(dictWordContent, thesaurus[0].a.get('href'))
-		#print mydivs[0].a.get('href')
+		getThesaurus(dictWordContent, soupDictionary)
 
 		### Definition ###
-		getDefinition(dictWordContent, soup)
+		getDefinition(dictWordContent, soupDictionary)
 
 	jsonObject = json.dumps(dictWordContent)
-	#print jsonObject
+	print jsonObject
 
 
-def getThesaurus(_dict, _thesaurusAddr):
-	#htmlThesaurusContent 
-	print _thesaurusAddr
+def getThesaurus(_dict, _soup):
+	_dict['thesaurus'] = {}
+	divThesaurus = _soup.findAll("div", { "class" : "deep-link-synonyms" })
+	thesaurusAddr = divThesaurus[0].a.get('href')
+	if len(thesaurusAddr) > 0:
+		htmlThesaurusContent  = getHTML(thesaurusAddr)
+		soupThesaurus = BeautifulSoup(htmlThesaurusContent, 'html.parser')
+		divSynonyms = soupThesaurus.findAll("div", {"class": "synonyms"} )
+		
+		# Find synonyms
+		listSynonyms = []
+		divRel = divSynonyms[0].findAll("div", {"class": "relevancy-block"})
+		#print divRel[0].div.find_all('a')
+		for a in divRel[0].div.find_all('a'):
+			listSynonyms.append(a.get_text())
+
+		_dict['thesaurus']['syn'] = listSynonyms
+		_dict['thesaurus']['ant'] = []
+		# Find Antonyms
+		listAntonyms = []
+		devAnt = divSynonyms[0].findAll("section", {"class": "antonyms"})
+		if len(devAnt):
+			for a in devAnt[0].find_all('a'):
+				listAntonyms.append(a.get_text())
+
+			_dict['thesaurus']['ant'] = listAntonyms
 
 
 ## Parsing definition section
