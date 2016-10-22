@@ -18,7 +18,7 @@ def main():
 	#print the_page
 	dictWordContent = { "word": strWord}
 
-	content = getPage(strWord)
+	content = getHTML('http://www.dictionary.com/browse/'+ strWord)
 	if content == None: # Word doesn't exist or cannot request
 		dictWordContent  = {}
 	else:
@@ -27,21 +27,24 @@ def main():
 		#### Thesaurus ###
 		thesaurus = soup.findAll("div", { "class" : "deep-link-synonyms" })
 		if len(thesaurus) > 0:
-			getThesaurus(dictWordContent, thesaurus[0])
+			getThesaurus(dictWordContent, thesaurus[0].a.get('href'))
 		#print mydivs[0].a.get('href')
 
 		### Definition ###
 		getDefinition(dictWordContent, soup)
 
 	jsonObject = json.dumps(dictWordContent)
-	print jsonObject
+	#print jsonObject
 
 
-
+def getThesaurus(_dict, _thesaurusAddr):
+	#htmlThesaurusContent 
+	print _thesaurusAddr
 
 
 ## Parsing definition section
-#
+#  @param 
+#  @return null
 
 def getDefinition(_dict, _soup):
 	_dict['def'] = {}
@@ -69,13 +72,14 @@ def getDefinition(_dict, _soup):
 
 
 
-## Retrieve Page Content
-#  return content of the word in www.dictionary.com
+## Retrieve Page Content 
+#  @param url address
+#  @return HTML as String
 
-def getPage(_word):
+def getHTML(_urlAddr):
 	end = False
 	intAttempt = 5;
-	strURLAddr = 'http://www.dictionary.com/browse/'+_word
+	strURLAddr = _urlAddr
 	while not end and intAttempt > 0:
 		try:
 			response = urllib2.urlopen(strURLAddr)
