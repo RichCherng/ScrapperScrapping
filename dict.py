@@ -30,28 +30,49 @@ def main():
 		### Definition ###
 		getDefinition(dictWordContent, soupDictionary)
 
+		### Get MAP Coords ###
+		getMapOrigin(dictWordContent, soupDictionary)
+
 	jsonObject = json.dumps(dictWordContent)
 	print jsonObject
 
+def getMapOrigin(_dict, _soup):
+	_dict['MapOriginLocation'] = {}
+	divCoords = _soup.findAll("div", {"class": "map-origin-language" ,"style": True})
+	for divLocation in divCoords:
+		#print divLocation.get_text().rstrip().lstrip()
+		_dict['MapOriginLocation'][divLocation.get_text().rstrip().lstrip()] = divLocation['style']
+		#print divLocation['style']
+
+
+	#print divMapOrigin
+	
+
+
+## Retrieve and parse thesaurus page
+#  @return None
 
 def getThesaurus(_dict, _soup):
 	_dict['thesaurus'] = {}
 	divThesaurus = _soup.findAll("div", { "class" : "deep-link-synonyms" })
 	thesaurusAddr = divThesaurus[0].a.get('href')
 	if len(thesaurusAddr) > 0:
+		# Get HTML of thesaurus
 		htmlThesaurusContent  = getHTML(thesaurusAddr)
+
+		# parse thesaurus content
 		soupThesaurus = BeautifulSoup(htmlThesaurusContent, 'html.parser')
 		divSynonyms = soupThesaurus.findAll("div", {"class": "synonyms"} )
 		
 		# Find synonyms
 		listSynonyms = []
 		divRel = divSynonyms[0].findAll("div", {"class": "relevancy-block"})
-		#print divRel[0].div.find_all('a')
 		for a in divRel[0].div.find_all('a'):
 			listSynonyms.append(a.get_text())
 
 		_dict['thesaurus']['syn'] = listSynonyms
 		_dict['thesaurus']['ant'] = []
+
 		# Find Antonyms
 		listAntonyms = []
 		devAnt = divSynonyms[0].findAll("section", {"class": "antonyms"})
