@@ -127,11 +127,11 @@ def getHTML(_urlAddr):
 			end = True
 			return response.read()
 		except urllib2.URLError:
-			print "Retrying on " + _word
+			#print "Retrying on " + _word
 			intAttempt -= 1
 			time.sleep(1)
 		except:
-			print 'Error on: ' + _word
+			#print 'Error on: ' + _word
 			return None
 	return None
 	
@@ -143,7 +143,8 @@ if __name__ == "__main__":
 	try:
 		main()
 	except KeyboardInterrupt:
-		print ""
+		#print ""
+		pass
 	except:
 		traceback.print_exc(file=sys.stdout)
 		sys.exit()
