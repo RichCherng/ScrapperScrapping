@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 
-import sys, os, traceback, urllib2, json, time
+import sys, os, traceback, urllib2, json, time,re
 from bs4 import BeautifulSoup
 #from lxml import etree
 #from HTMLParser import HTMLParser
@@ -106,7 +106,8 @@ def getDefinition(_dict, _soup):
 		# for every section, get a list of definitions
 		listOfDef = []
 		for defContent in section.findAll("div", {"class": "def-content"}):
-			listOfDef.append(defContent.get_text())
+			strContent = defContent.get_text().replace('\n','').replace('\r', '')
+			listOfDef.append(re.sub(' +', ' ', strContent))
 
 		_dict['def'][strCategory[:-2]] = listOfDef
 
