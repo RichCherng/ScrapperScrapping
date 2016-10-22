@@ -33,8 +33,41 @@ def main():
 		### Get MAP Coords ###
 		getMapOrigin(dictWordContent, soupDictionary)
 
+		### Get Origin ###
+		getOrigin(dictWordContent, soupDictionary)
+
+		### Get Slang ###
+		#getSlang(dictWordContent, soupDictionary)
+
 	jsonObject = json.dumps(dictWordContent)
 	print jsonObject
+
+
+def getOrigin(_dict, _soup):
+	_dict['origin'] = {}
+	sectionOrigin = _soup.findAll("section", {"id" : "source-etymon2"})
+	divSrcBox = sectionOrigin[0].findAll("div", {"class" : "source-box"})
+
+	divDefList = divSrcBox[0].findAll("div", {"class" : "def-list"})
+	
+	listDef = []
+	for defCon in divDefList[0].findAll('div', {"class" : "def-set"}):
+		listDef.append(defCon.get_text().replace('\n','').replace('\r', '').lstrip().rstrip())
+
+	_dict['origin']['def'] = listDef
+
+
+#def getSlang(_dict, _soup):
+#	sectionSlang = _soup.findAll("section", {"id": "source-das"})
+#	divDefCon = sectionSlang[0].findAll("div", {"class" : "def-con"} )
+#	for defCon in divDefCon:
+#		for p in defCon.find_all('p'):
+#			print p.get_text()
+	
+
+
+##  Get location of origin of the word with their coordinate 
+#	@return None
 
 def getMapOrigin(_dict, _soup):
 	_dict['MapOriginLocation'] = {}
@@ -53,20 +86,21 @@ def getMapOrigin(_dict, _soup):
 #  @return None
 
 def getThesaurus(_dict, _soup):
-	_dict['thesaurus'] = {}
-	divThesaurus = _soup.findAll("div", { "class" : "deep-link-synonyms" })
-	thesaurusAddr = divThesaurus[0].a.get('href')
+	_dict['thesaurus']	= {}
+	divThesaurus 		= _soup.findAll("div", { "class" : "deep-link-synonyms" })
+	thesaurusAddr 		= divThesaurus[0].a.get('href')
+
 	if len(thesaurusAddr) > 0:
 		# Get HTML of thesaurus
 		htmlThesaurusContent  = getHTML(thesaurusAddr)
 
 		# parse thesaurus content
-		soupThesaurus = BeautifulSoup(htmlThesaurusContent, 'html.parser')
-		divSynonyms = soupThesaurus.findAll("div", {"class": "synonyms"} )
+		soupThesaurus 	= BeautifulSoup(htmlThesaurusContent, 'html.parser')
+		divSynonyms 	= soupThesaurus.findAll("div", {"class": "synonyms"} )
 		
 		# Find synonyms
-		listSynonyms = []
-		divRel = divSynonyms[0].findAll("div", {"class": "relevancy-block"})
+		listSynonyms 	= []
+		divRel 			= divSynonyms[0].findAll("div", {"class": "relevancy-block"})
 		for a in divRel[0].div.find_all('a'):
 			listSynonyms.append(a.get_text())
 
@@ -97,7 +131,7 @@ def getDefinition(_dict, _soup):
 
 	for section in defSection:
 		# Get category of the section
-		category = section.findAll("span", {"class" : "dbox-pg" })
+		category 	= section.findAll("span", {"class" : "dbox-pg" })
 		strCategory = ''
 		for string in category:
 			strCategory += string.get_text() + ", "
