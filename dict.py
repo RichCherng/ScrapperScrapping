@@ -111,8 +111,9 @@ def getThesaurus(_dict, _soup):
 		# Find Antonyms
 		listAntonyms = []
 		devAnt = divSynonyms[0].findAll("section", {"class": "antonyms"})
-		ulAnt = devAnt[0].findAll("ul", {"class": "list"})
-		if len(devAnt):
+
+		if len(devAnt):		
+			ulAnt = devAnt[0].findAll("ul", {"class": "list"})
 			for ul in ulAnt:
 				for a in ul.find_all('a'):
 					listAntonyms.append(a.get_text())
