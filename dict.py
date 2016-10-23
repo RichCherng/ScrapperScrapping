@@ -101,8 +101,9 @@ def getThesaurus(_dict, _soup):
 		# Find synonyms
 		listSynonyms 	= []
 		divRel 			= divSynonyms[0].findAll("div", {"class": "relevancy-block"})
-		for a in divRel[0].div.find_all('a'):
-			listSynonyms.append(a.get_text())
+		for a in divRel[0].div.find_all('a'):	
+			for text in a.findAll('span', {"class" : "text"}):
+				listSynonyms.append(text.get_text())
 
 		_dict['thesaurus']['syn'] = listSynonyms
 		_dict['thesaurus']['ant'] = []
@@ -110,9 +111,12 @@ def getThesaurus(_dict, _soup):
 		# Find Antonyms
 		listAntonyms = []
 		devAnt = divSynonyms[0].findAll("section", {"class": "antonyms"})
+		ulAnt = devAnt[0].findAll("ul", {"class": "list"})
 		if len(devAnt):
-			for a in devAnt[0].find_all('a'):
-				listAntonyms.append(a.get_text())
+			for ul in ulAnt:
+				for a in ul.find_all('a'):
+					listAntonyms.append(a.get_text())
+				
 
 			_dict['thesaurus']['ant'] = listAntonyms
 
